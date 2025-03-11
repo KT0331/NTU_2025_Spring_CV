@@ -73,10 +73,3 @@ class Difference_of_Gaussian(object):
         
         return keypoints, dog_images
         # return keypoints
-
-if __name__ == '__main__':
-    img = cv2.imread('./testdata/1.png', 0).astype(np.float64)    
-    DoG = Difference_of_Gaussian(threshold = 5.0)
-    
-    # find keypoint from DoG and sort it
-    keypoints = DoG.get_keypoints(img)
