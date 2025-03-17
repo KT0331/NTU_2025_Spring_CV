@@ -39,8 +39,8 @@ def main():
 
     jbf_out_rgb = JBF.joint_bilateral_filter(img_rgb, img_rgb).astype(np.uint8)
 
-    for i in range(1, 7):
-        if i < 6:
+    for i in range(6):
+        if i > 0:
             weight_r, weight_g, weight_b = setting[i].split(',')[0], setting[i].split(',')[1], setting[i].split(',')[2]
             weight_r, weight_g, weight_b = np.float64(weight_r), np.float64(weight_g), np.float64(weight_b)      
             img_y[:, :] = weight_r * img_rgb[:, :, 0] + weight_g * img_rgb[:, :, 1] + weight_b * img_rgb[:, :, 2]

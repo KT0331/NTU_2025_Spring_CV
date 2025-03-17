@@ -29,8 +29,11 @@ def main():
     if args.plot_mode == 'v':
         # find keypoint from DoG and sort it
         _, dog_images = DoG.get_keypoints(img)  
-        for i in range(len(dog_images)):  
-            cv2.imwrite('./output_image/DOG_v_{}.png'.format(i), dog_images[i].astype(np.uint8))
+        for i in range(len(dog_images)):
+            if i < 4:
+                cv2.imwrite('./output_image/DOG1-{}.png'.format(i+1), dog_images[i].astype(np.uint8))
+            else:
+                cv2.imwrite('./output_image/DOG2-{}.png'.format(i-3), dog_images[i].astype(np.uint8))
 
     elif args.plot_mode == 'f':
         keypoints, _ = DoG.get_keypoints(img)  
