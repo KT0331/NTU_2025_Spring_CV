@@ -12,6 +12,8 @@ import argparse
 import numpy as np
 import torch
 import torch.nn as nn
+import matplotlib
+matplotlib.use('AGG')
 import matplotlib.pyplot as plt
 from datetime import datetime
 
@@ -54,7 +56,47 @@ def plot_learning_curve(
     # is not fixed.                                                #
     ################################################################
     
-    pass
+    # pass
+
+    # training accuracy
+    train_acc_list = result_lists['train_acc']
+    plt.plot(range(1, (len(train_acc_list)+1)), train_acc_list)
+    plt.title('Training Accuracy')
+    plt.xlabel('Epoch')
+    plt.ylabel('Accuracy')
+    plt.gca().yaxis.set_major_locator(plt.MaxNLocator(integer=True))
+    plt.savefig(logfile_dir + '_train_acc.png')
+    plt.close()
+
+    # training loss
+    train_loss_list = result_lists['train_loss']
+    plt.plot(range(1, (len(train_loss_list)+1)), train_loss_list)
+    plt.title('Training Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.gca().yaxis.set_major_locator(plt.MaxNLocator(integer=True))
+    plt.savefig(logfile_dir + '_train_loss.png')
+    plt.close()
+
+    # validation accuracy
+    val_acc_list = result_lists['val_acc']
+    plt.plot(range(1, (len(val_acc_list)+1)), val_acc_list)
+    plt.title('Validation Accuracy')
+    plt.xlabel('Epoch')
+    plt.ylabel('Accuracy')
+    plt.gca().yaxis.set_major_locator(plt.MaxNLocator(integer=True))
+    plt.savefig(logfile_dir + '_val_acc.png')
+    plt.close()
+
+    # validation loss
+    val_loss_list = result_lists['val_loss']
+    plt.plot(range(1, (len(val_loss_list)+1)), val_loss_list)
+    plt.title('Validation Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.gca().yaxis.set_major_locator(plt.MaxNLocator(integer=True))
+    plt.savefig(logfile_dir + '_val_loss.png')
+    plt.close()
 
 def train(
         model: nn.Module,
@@ -133,6 +175,14 @@ def train(
             # You don't have to update parameters, just record the      #
             # accuracy and loss.                                        #
             #############################################################
+            for batch, data in enumerate(val_loader):
+                sys.stdout.write(f'\r[{epoch + 1}/{cfg.epochs}] Val batch: {batch + 1} / {len(val_loader)}')
+                sys.stdout.flush()
+                images, labels = data['images'].to(device), data['labels'].to(device) # (batch_size, 3, 32, 32), (batch_size)
+                output = model(images)
+                val_loss += criterion(output, labels).item()
+                pred = output.max(1, keepdim = True)[1]
+                val_correct += pred.eq(labels.view_as(pred)).sum().item()
 
             ######################### TODO End ##########################
 
@@ -140,7 +190,8 @@ def train(
         val_time = time.time() - val_start_time
         val_acc = val_correct / len(val_loader.dataset)
         val_loss /= len(val_loader)
-        val_acc_list.append(val_acc.cpu().numpy())
+        # val_acc_list.append(val_acc.cpu().numpy())
+        val_acc_list.append(val_acc)
         val_loss_list.append(val_loss)
         print()
         print(f'[{epoch + 1}/{cfg.epochs}] {val_time:.2f} sec(s) Val Acc: {val_acc:.5f} | Val Loss: {val_loss:.5f}')

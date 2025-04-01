@@ -32,9 +32,12 @@ def get_dataloader(
     ###############################
     if split == 'train':
         transform = transforms.Compose([
-            transforms.Resize((32,32)),
+            # transforms.Resize((224,224)),
             ##### TODO: Data Augmentation Begin #####
-            
+            transforms.RandomResizedCrop(224, scale=(256/480, 1.0)),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomRotation(10),
+            transforms.RandomGrayscale(),
             ##### TODO: Data Augmentation End #####
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406],
@@ -42,7 +45,7 @@ def get_dataloader(
         ])
     else: # 'val' or 'test'
         transform = transforms.Compose([
-            transforms.Resize((32,32)),
+            transforms.Resize((224,224)),
             # we usually don't apply data augmentation on test or val data
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406],
@@ -55,7 +58,7 @@ def get_dataloader(
     dataloader = DataLoader(dataset,
                             batch_size=batch_size,
                             shuffle=(split=='train'),
-                            num_workers=0,
+                            num_workers=8,
                             pin_memory=True, 
                             drop_last=(split=='train'))
 
@@ -96,11 +99,22 @@ class CIFAR10Dataset(Dataset):
         # You will not have labels if it's test set            #
         ########################################################
 
+        image_fn = self.image_names[index]
+        image = Image.open(os.path.join(self.dataset_dir ,image_fn))
+
+        if self.transform is not None:
+            image = self.transform(image)
+
         ###################### TODO End ########################
 
-        pass
-            
-        # return {
-        #     'images': image, 
-        #     'labels': label
-        # }
+        # pass
+        if self.split != 'test':
+            label = self.labels[index]
+            return {
+                'images': image, 
+                'labels': label
+            }
+        else:
+            return {
+            'images': image, 
+            }

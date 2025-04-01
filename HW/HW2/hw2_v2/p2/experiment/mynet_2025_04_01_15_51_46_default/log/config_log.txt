@@ -1,0 +1,7 @@
+Experiment Name = default
+Model Type      = mynet
+Num epochs      = 60
+Batch size      = 128
+Use adam        = False
+Learning rate   = 0.1
+Scheduler step  = [5, 32, 45, 55]
