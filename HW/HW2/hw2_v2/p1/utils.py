@@ -11,6 +11,7 @@ from tqdm import tqdm
 from cyvlfeat.sift.dsift import dsift
 from cyvlfeat.kmeans import kmeans
 from scipy.spatial.distance import cdist
+from scipy.stats import mode
 
 CAT = ['Kitchen', 'Store', 'Bedroom', 'LivingRoom', 'Office',
        'Industrial', 'Suburb', 'InsideCity', 'TallBuilding', 'Street',
@@ -49,7 +50,15 @@ def get_tiny_images(img_paths: str):
     #################################################################
 
     tiny_img_feats = []
-
+    img_resolution = 16
+    for img_path in img_paths:
+        image = Image.open(img_path)
+        tiny_img = image.resize((img_resolution,img_resolution))
+        tiny_img = np.array(tiny_img)
+        tiny_img = np.reshape(tiny_img,(-1))
+        tiny_img = (tiny_img - np.mean(tiny_img)) / (np.std(tiny_img) + 0.000001)
+        tiny_img_feats.append(tiny_img)
+    tiny_img_feats = np.asarray(tiny_img_feats)
     #################################################################
     #                        END OF YOUR CODE                       #
     #################################################################
@@ -108,7 +117,17 @@ def build_vocabulary(
     #      approximate version of SIFT is about 20 times faster to compute           #
     # You are welcome to use your own SIFT feature                                   #
     ##################################################################################
-
+    feature = []
+    for i, img_path in enumerate(tqdm(img_paths)):
+        if i % 10 == 0:
+            image = Image.open(img_path)
+            image=np.array(image)
+            _, descriptors = dsift(image, step=[5,5], fast=True)
+            num = min(descriptors.shape[0],80)
+            choice = np.random.choice(descriptors.shape[0], num, replace=False)
+            feature.extend(descriptors[choice, :])
+    feature = np.asarray(feature).astype('float32')
+    vocab = kmeans(feature, num_centers=vocab_size, initialization="PLUSPLUS")
 
 
     ##################################################################################
@@ -157,7 +176,20 @@ def get_bags_of_sifts(
     ############################################################################
 
     img_feats = []
+    for img_path in tqdm(img_paths):
+        image = Image.open(img_path)
+        image = np.asarray(image)
+        _, descriptors = dsift(image, step=[3,3], fast=True)
 
+        # Caculate distance dist[i,j] means distance between descriptors[i] and vocab[j]
+        dist = cdist(descriptors, vocab, metric='euclidean')
+
+        # Catch index each row (find smallest distance between each descriptors and each vocab)
+        idx = np.argmin(dist, axis=1)
+        img_histogram, _ = np.histogram(idx, bins=len(vocab),density=True)
+        img_feats.append(img_histogram)
+
+    img_feats=np.array(img_feats)
     ############################################################################
     #                                END OF YOUR CODE                          #
     ############################################################################
@@ -191,6 +223,12 @@ def nearest_neighbor_classify(
         3. M is the total number of testing images
     '''
 
+    CAT = ['Kitchen', 'Store', 'Bedroom', 'LivingRoom', 'Office',
+           'Industrial', 'Suburb', 'InsideCity', 'TallBuilding', 'Street',
+           'Highway', 'OpenCountry', 'Coast', 'Mountain', 'Forest']
+
+    CAT2ID = {v: k for k, v in enumerate(CAT)}
+
     ###########################################################################
     # TODO:                                                                   #
     # KNN predict the category for every testing image by finding the         #
@@ -214,6 +252,12 @@ def nearest_neighbor_classify(
     ###########################################################################
 
     test_predicts = []
+    k = 8
+    distance = cdist(test_img_feats, train_img_feats, metric='minkowski', p=1)
+    distance_sort = np.argsort(distance, axis = 1)
+    k_max_label = np.array(train_labels)[distance_sort[:, :k]]
+    test_predicts = mode(k_max_label, axis = 1).mode.ravel()
+    test_predicts = list(test_predicts)
 
     ###########################################################################
     #                               END OF YOUR CODE                          #
