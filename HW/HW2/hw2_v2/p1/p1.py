@@ -57,8 +57,6 @@ def main():
         test_img_feats = get_tiny_images(test_img_paths)
 
     elif args.feature == 'bag_of_sift':
-        bag_of_sift_start_time = time.time()
-        
         # vocab and features is saved to disk to avoid recomputing the vocabulary every time
         if os.path.isfile('vocab.pkl') is False:
             print('No existing visual word vocabulary found. Computing one from training images')
@@ -85,9 +83,6 @@ def main():
         else:
             with open('test_image_feats.pkl', 'rb') as f:
                 test_img_feats = pickle.load(f)
-
-        bag_of_sift_time = time.time() - bag_of_sift_start_time
-        print(f'Bag of SIFT Execution Time: {bag_of_sift_time}')
 
     else:
         raise NameError('Unknown feature type')
