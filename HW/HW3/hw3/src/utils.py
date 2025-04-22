@@ -78,7 +78,7 @@ def warping(src, dst, H, ymin, ymax, xmin, xmax, direction='b'):
     if direction == 'b':
         # TODO: 3.apply H_inv to the destination pixels and retrieve (u,v) pixels, then reshape to (ymax-ymin),(xmax-xmin)
         # (3,3) * (N,3)^T = (3,N)
-        transformed_coord = np.dot(H_inv, homogeneous.T)
+        transformed_coord =  H_inv @ homogeneous.T # np.dot(H_inv, homogeneous.T)
         # inhomogeneous, (N,3)
         transformed_coord = (transformed_coord / transformed_coord[2]).T
         transformed_coord = transformed_coord.astype(int)
@@ -96,7 +96,7 @@ def warping(src, dst, H, ymin, ymax, xmin, xmax, direction='b'):
     elif direction == 'f':
         # TODO: 3.apply H to the source pixels and retrieve (u,v) pixels, then reshape to (ymax-ymin),(xmax-xmin)
         # (3,3) * (N,3)^T = (3,N)
-        transformed_coord = np.dot(H, homogeneous.T)
+        transformed_coord = H @ homogeneous.T # np.dot(H, homogeneous.T)
         # inhomogeneous, (N,3)
         transformed_coord = (transformed_coord / transformed_coord[2]).T
         transformed_coord = transformed_coord.astype(int)
