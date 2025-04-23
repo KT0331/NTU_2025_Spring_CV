@@ -91,8 +91,6 @@ def warping(src, dst, H, ymin, ymax, xmin, xmax, direction='b'):
         # TODO: 6. assign to destination image using advanced array indicing
         dst[valid_dst[1],valid_dst[0]] = src[valid_src[1],valid_src[0]]
 
-        pass
-
     elif direction == 'f':
         # TODO: 3.apply H to the source pixels and retrieve (u,v) pixels, then reshape to (ymax-ymin),(xmax-xmin)
         # (3,3) * (N,3)^T = (3,N)
