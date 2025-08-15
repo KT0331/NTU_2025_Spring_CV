@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DEVICE=$1
-MODE=$2  # patch 或 seg
+MODE=$2  # 'patch' or 'seg' or keep empty
 
 CMD="CUDA_VISIBLE_DEVICES=${DEVICE} \
     python3 ./src/train.py \
