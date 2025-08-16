@@ -1,4 +1,5 @@
 # Iris Recognition Challenge
+Assigned by GANZIN Technology.  
 ## Environment
 ```sh
 sh init.sh <env_name>
@@ -15,10 +16,10 @@ sh patch_gen.sh
 ```sh
 sh train.sh <GPU ID> <Mode>
 ```
-Mode: 'patch' or 'seg' or keep empty  
+Mode: 'patch', 'seg', or leave it empty  
 
 ## Inference
 ```sh
 sh inference.sh <GPU ID> <Mode>
 ```
-Mode: 'patch' or 'seg' or keep empty  
+Mode: 'patch', or 'seg', or leave it empty  
