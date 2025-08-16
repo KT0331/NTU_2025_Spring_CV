@@ -1,5 +1,5 @@
 # NTU_2025_Spring_CV
-Computer Vision: from recognition to geometry
+***Computer Vision: from recognition to geometry***
 
 Copyright © 2025 K.T. Tu. All Rights Reserved.
 
