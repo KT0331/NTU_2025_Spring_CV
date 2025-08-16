@@ -1,4 +1,4 @@
-#Computer Vision: from recognition to geometry
+# Computer Vision: from recognition to geometry
 Professor: S.Y. Chien  
 ### HW1: Scale Invariant Feature Detection and Image Filtering  
  * Part1: Difference of Gaussian  
